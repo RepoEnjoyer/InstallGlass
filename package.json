@@ -1,0 +1,56 @@
+{
+  "name": "installglass",
+  "version": "1.0.0",
+  "description": "Run npm package installation inside a hardened sandbox and inspect exactly what it attempted to do.",
+  "type": "module",
+  "bin": {
+    "installglass": "dist/cli.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "sandbox",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "privacy": "node scripts/privacy-check.mjs",
+    "check": "npm run privacy && npm run lint && npm run typecheck && npm test && npm run build",
+    "prepack": "npm run build"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RepoEnjoyer/InstallGlass.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RepoEnjoyer/InstallGlass/issues"
+  },
+  "homepage": "https://github.com/RepoEnjoyer/InstallGlass#readme",
+  "keywords": [
+    "npm",
+    "supply-chain",
+    "sandbox",
+    "security",
+    "malware-analysis",
+    "developer-tools"
+  ],
+  "author": "RepoEnjoyer",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.1.1",
+    "eslint": "10.7.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.64.0",
+    "vitest": "4.1.10"
+  }
+}

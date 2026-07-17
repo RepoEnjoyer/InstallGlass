@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Node ${{ matrix.node }} quality
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm audit --omit=dev
+      - run: npm pack --dry-run
+
+  sandbox-integration:
+    name: Docker sandbox integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Audit synthetic behavior fixture
+        run: >-
+          node dist/cli.js audit ./test/fixtures/probe-package
+          --output integration-report.md
+          --json integration-report.json
+          --timeout 5m
+          --rebuild
+      - name: Verify all evidence collectors
+        run: node scripts/verify-integration-report.mjs integration-report.json
+      - name: Confirm report privacy
+        run: |
+          if grep -Eq '/home/runner|/work[s]pace/|github_pat_|ghp_|AKIA[0-9A-Z]{16}' integration-report.md integration-report.json; then
+            echo 'Generated report contains a forbidden host path or credential pattern.' >&2
+            exit 1
+          fi

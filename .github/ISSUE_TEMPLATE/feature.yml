@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a focused evidence, safety, or workflow improvement
+title: "feature: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What real workflow or evidence gap should InstallGlass solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Explain the user-facing behavior and safe default.
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security and privacy impact
+      description: What new data, mounts, permissions, network access, or dependencies would this require?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Project principles
+      options:
+        - label: This proposal keeps runtime evidence distinct from static heuristics.
+          required: true
+        - label: This proposal does not require uploading package contents or reports.
+          required: true
