@@ -1,0 +1,59 @@
+name: Publish metadata and release
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      RELEASE_NOTES: |
+        InstallGlass 1.0.0 is the first complete npm installation-audit release.
+
+        Highlights:
+        - hardened non-root Docker analysis with bounded resources;
+        - isolated proxy-only egress with private-address and DNS-rebinding defenses;
+        - file, lifecycle, process, network, environment-name, and native-artifact evidence;
+        - deterministic Markdown and JSON reports with privacy redaction;
+        - zero runtime npm dependencies;
+        - Node 20/22/24 quality coverage and a real Docker integration fixture.
+
+        InstallGlass reports behavior observed in one run; it does not certify that a package is safe.
+    steps:
+      - name: Set repository description and topics
+        run: |
+          gh api --method PATCH repos/RepoEnjoyer/InstallGlass \
+            -f description='Runs npm installation in a hardened sandbox and reports exactly what the package attempted.'
+          gh api --method PUT repos/RepoEnjoyer/InstallGlass/topics \
+            -f 'names[]=npm' \
+            -f 'names[]=security' \
+            -f 'names[]=supply-chain' \
+            -f 'names[]=sandbox' \
+            -f 'names[]=developer-tools' \
+            -f 'names[]=package-audit' \
+            -f 'names[]=local-first' \
+            -f 'names[]=docker' \
+            -f 'names[]=static-analysis' \
+            -f 'names[]=malware-analysis'
+      - name: Create v1.0.0 release once
+        run: |
+          if gh release view v1.0.0 --repo RepoEnjoyer/InstallGlass >/dev/null 2>&1; then
+            echo 'Release v1.0.0 already exists.'
+            exit 0
+          fi
+          gh release create v1.0.0 \
+            --repo RepoEnjoyer/InstallGlass \
+            --target "$TARGET_SHA" \
+            --title 'InstallGlass v1.0.0' \
+            --notes "$RELEASE_NOTES"

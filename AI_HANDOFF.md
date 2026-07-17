@@ -16,6 +16,7 @@ InstallGlass audits npm installation behavior inside a disposable Docker sandbox
 - `sandbox/scan.mjs`: bounded artifact manifest, native detection, static heuristics.
 - `src/analyzers`: JSONL/syscall parsing and deterministic finding rules.
 - `src/reporters`: Markdown and JSON serialization.
+- `.github/workflows/publish.yml`: idempotent repository topics and v1.0.0 release publication after successful CI.
 
 ## Important decisions
 
