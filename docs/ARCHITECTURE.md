@@ -18,6 +18,8 @@ InstallGlass separates orchestration, execution, egress, collection, interpretat
 
 The analysis container joins only an `--internal` Docker bridge. The proxy joins both that internal bridge and a separate egress bridge. The analysis container receives standard HTTP proxy variables and cannot route directly to the internet through its own network.
 
+The analysis container drops all capabilities and then adds only `SYS_PTRACE`, which Docker's default seccomp policy uses to permit syscall tracing. The proxy remains in a separate container and PID namespace with every capability dropped.
+
 The proxy resolves hostnames itself and connects to a chosen IP rather than resolving again in the connection call. Any result set containing a private or reserved address is blocked to reduce DNS rebinding risk. HTTPS passes through as an opaque CONNECT tunnel; TLS is not intercepted.
 
 ## Data flow

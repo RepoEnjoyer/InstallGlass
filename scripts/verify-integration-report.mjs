@@ -15,6 +15,7 @@ const checks = [
 const failed = checks.filter(([, passed]) => !passed).map(([label]) => label);
 if (failed.length > 0) {
   process.stderr.write(`Integration evidence missing: ${failed.join(", ")}\n`);
+  process.stderr.write(`${JSON.stringify({ metadata: report.metadata, limitations: report.limitations }, null, 2)}\n`);
   process.exitCode = 1;
 } else {
   process.stdout.write("Integration report contains every expected evidence class.\n");

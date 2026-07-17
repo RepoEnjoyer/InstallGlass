@@ -26,7 +26,7 @@ InstallGlass audits npm installation behavior inside a disposable Docker sandbox
 5. Local paths are copied under a neutral fixed name, and reports use `file:<local-package>`.
 6. Static signals stay explicitly separate from runtime evidence.
 7. There are zero runtime npm dependencies to reduce this security tool's own supply-chain surface.
-8. The default Docker seccomp profile is retained. On modern kernels, tracing the launched child tree works without granting `SYS_PTRACE`; do not add `--privileged` or mount the Docker socket.
+8. The default Docker seccomp profile is retained. The analysis container adds only `SYS_PTRACE` after dropping all capabilities so `strace` can follow its own child tree. The proxy drops all capabilities. Do not add `--privileged`, share a PID namespace, or mount the Docker socket.
 
 ## Current limitations
 

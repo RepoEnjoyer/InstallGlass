@@ -42,7 +42,7 @@ flowchart LR
   A --> R[Markdown + JSON evidence]
 ```
 
-The analysis container runs as your numeric user, with a read-only root filesystem, all Linux capabilities dropped, `no-new-privileges`, process/CPU/memory limits, a no-exec temporary filesystem, and only disposable analysis/output directories mounted. It has no direct route to the internet. The proxy rejects private, loopback, link-local, reserved, and mixed public/private DNS results.
+The analysis container runs as your numeric user, with a read-only root filesystem, every Linux capability dropped except `SYS_PTRACE` for its own traced process tree, `no-new-privileges`, process/CPU/memory limits, a no-exec temporary filesystem, and only disposable analysis/output directories mounted. It has no direct route to the internet. The proxy has no capabilities and rejects private, loopback, link-local, reserved, and mixed public/private DNS results.
 
 This is defense in depth, not a VM or a safety certificate. Read [the threat model](docs/THREAT_MODEL.md) before using InstallGlass with deliberately hostile packages.
 

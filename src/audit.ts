@@ -4,6 +4,7 @@ import { collectEvidence } from "./analyzers/collect.js";
 import { buildFindings, summarize } from "./analyzers/findings.js";
 import { INSTALLGLASS_VERSION, LIMITATIONS, REPORT_SCHEMA_VERSION } from "./constants.js";
 import { DockerClient } from "./docker.js";
+import { redact } from "./redact.js";
 import { renderJson } from "./reporters/json.js";
 import { renderMarkdown } from "./reporters/markdown.js";
 import { createAuditWorkspace, removeAuditWorkspace } from "./workspace.js";
@@ -39,6 +40,8 @@ export async function auditPackage(options: AuditOptions): Promise<AuditReport> 
     const installCompleted = !timedOut && collected.sandboxResult?.installExitCode === 0;
     if (run.command.exitCode !== 0 && !timedOut && !collected.sandboxResult) {
       collected.warnings.push("The analysis container exited before producing a completion record.");
+      const diagnostic = redact(run.command.stderr.trim() || run.command.stdout.trim(), 1_000);
+      if (diagnostic) collected.warnings.push(`Container diagnostic: ${diagnostic}`);
     }
     const findings = buildFindings(collected.evidence, installCompleted, collected.warnings);
     const completed = Date.now();

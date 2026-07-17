@@ -21,7 +21,7 @@ The package may run arbitrary lifecycle code, spawn processes, use native execut
 
 - No host project directory is mounted into the analysis container.
 - Local targets are copied into a temporary directory rather than mounted from their original path.
-- The container runs as a non-root numeric user with a read-only root, all capabilities dropped, and `no-new-privileges`.
+- The container runs as a non-root numeric user with a read-only root, `no-new-privileges`, and only `SYS_PTRACE` retained so `strace` can follow the container's own process tree. The separate proxy drops every capability.
 - CPU, memory, PID, and wall-clock limits constrain basic denial of service.
 - Only disposable analysis and evidence directories are writable bind mounts.
 - The analysis network is internal; a separate proxy provides constrained public egress.
@@ -32,6 +32,7 @@ The package may run arbitrary lifecycle code, spawn processes, use native execut
 ## Out of scope and residual risk
 
 - Container escapes and kernel/runtime zero-days. Docker containers are not virtual machines.
+- A package can attempt to interfere with same-user processes inside its disposable analysis container; no host processes or proxy process share that PID namespace.
 - Side channels, covert channels, and resource-exhaustion techniques not stopped by configured limits.
 - Behavior gated on a different OS, CPU, time, locale, registry response, user interaction, or sandbox detection.
 - Environment access by native processes or code that removes `NODE_OPTIONS`.

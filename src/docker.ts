@@ -185,6 +185,8 @@ export class DockerClient {
         "--read-only",
         "--cap-drop",
         "ALL",
+        "--cap-add",
+        "SYS_PTRACE",
         "--security-opt",
         "no-new-privileges",
         "--pids-limit",
