@@ -22,7 +22,7 @@ InstallGlass audits npm installation behavior inside a disposable Docker sandbox
 1. The analysis container has no direct egress. A separate proxy is the only routed path.
 2. Real host npm configuration and credentials are never mounted or forwarded. v1 therefore does not support private registries.
 3. HTTPS is not intercepted. Destination metadata is sufficient for the first release and avoids collecting secrets or content.
-4. Environment instrumentation records names and operations only. It filters tool variables and never serializes values.
+4. Environment instrumentation records names and operations only. It activates the `process.env` proxy only when npm has set `npm_lifecycle_event`; proxying npm's own environment breaks npm. It filters tool variables and never serializes values.
 5. Local paths are copied under a neutral fixed name, and reports use `file:<local-package>`.
 6. Static signals stay explicitly separate from runtime evidence.
 7. There are zero runtime npm dependencies to reduce this security tool's own supply-chain surface.

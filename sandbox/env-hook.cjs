@@ -43,7 +43,7 @@ function record(entry) {
 
 record({ type: "process_start", executable: process.execPath, arguments: process.argv.slice(1).map(redact) });
 
-try {
+if (originalEnv.npm_lifecycle_event) try {
   let enumeratingEnv = false;
   const proxiedEnv = new Proxy(originalEnv, {
     get(target, property, receiver) {
